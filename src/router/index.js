@@ -1,27 +1,48 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import Vue from 'vue';
+import Router from 'vue-router';
 
-Vue.use(VueRouter)
+// 在VUE中路由遇到Error: Avoided redundant navigation to current location:报错显示是路由重复
+const originalPush = Router.prototype.push;
+Router.prototype.push = function push(location) {
+    return originalPush.call(this, location).catch(err => err);
+}
+Vue.use(Router);
+
+const Home = () => import('@/views/home/Home.vue');
+const Category = () => import('@/views/category/Category.vue');
+const Cart = () => import('@/views/cart/Cart.vue');
+const Profile = () => import('@/views/profile/Profile.vue');
+const Detail = () => import('@/views/detail/Detail.vue');
 
 const routes = [
-  {
-    path: '/',
-    name: 'Home',
-    component: Home
-  },
-  {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  }
+    {
+        path: '',
+        redirect: '/home'
+    },
+    {
+        path: '/home',
+        component: Home,
+    },
+    {
+        path: '/category',
+        component: Category,
+    },
+    {
+        path: '/cart',
+        component: Cart,
+    },
+    {
+        path: '/profile',
+        component: Profile,
+    },
+    {
+        path: '/detail/:iid',
+        component: Detail,
+    }
 ]
+const router = new Router({
+    routes,
+    mode: 'history',
+});
 
-const router = new VueRouter({
-  routes
-})
-
-export default router
+export default router;
